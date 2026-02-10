@@ -21,6 +21,11 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <% stylesheet_url =
+         Rails.env.development? ? "https://cdn.simplecss.org/simple.css" : "https://cdn.simplecss.org/simple.min.css" %>
+    <link rel="stylesheet" href="<%= stylesheet_url %>">
+
   </head>
 
   <body>
