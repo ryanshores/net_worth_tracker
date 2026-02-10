@@ -7,6 +7,8 @@ class CreateBalanceSnapshots < ActiveRecord::Migration[8.1]
       t.decimal :available
       t.string :currency
 
+      t.index [ :account_id, :date ], unique: true
+
       t.timestamps
     end
   end
