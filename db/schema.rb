@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_10_190725) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_10_194106) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -19,10 +19,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_190725) do
     t.datetime "created_at", null: false
     t.bigint "institution_id", null: false
     t.string "name"
-    t.string "plaid_account_id"
+    t.string "plaid_account_id", null: false
     t.string "subtype"
     t.datetime "updated_at", null: false
     t.index ["institution_id"], name: "index_accounts_on_institution_id"
+    t.index ["plaid_account_id"], name: "index_accounts_on_plaid_account_id", unique: true
   end
 
   create_table "balance_snapshots", force: :cascade do |t|
@@ -33,13 +34,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_10_190725) do
     t.decimal "current"
     t.date "date"
     t.datetime "updated_at", null: false
+    t.index ["account_id", "date"], name: "index_balance_snapshots_on_account_id_and_date", unique: true
     t.index ["account_id"], name: "index_balance_snapshots_on_account_id"
   end
 
   create_table "institutions", force: :cascade do |t|
+    t.string "access_token"
     t.datetime "created_at", null: false
     t.string "name"
-    t.integer "status"
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", null: false
   end
 
