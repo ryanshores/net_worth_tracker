@@ -15,9 +15,6 @@ touch .env
 echo 'PLAID_CLIENT_ID=your_client_id' >> .env
 echo 'PLAID_SECRET=your_secret' >> .env
 echo 'PLAID_ENV=sandbox' >> .env
-echo "AR_ENCRYPTION_PRIMARY_KEY=$(bin/rails secret)" >> .env
-echo "AR_ENCRYPTION_DETERMINISTIC_KEY=$(bin/rails secret)" >> .env
-echo "AR_ENCRYPTION_KEY_DERIVATION_SALT=$(bin/rails secret)" >> .env
 ```
 
 * Database creation

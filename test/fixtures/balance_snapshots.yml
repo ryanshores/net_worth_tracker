@@ -5,11 +5,11 @@ one:
   date: 2026-02-10
   current: 9.99
   available: 9.99
-  currency: MyString
+  currency: USD
 
 two:
   account: two
   date: 2026-02-10
   current: 9.99
   available: 9.99
-  currency: MyString
+  currency: USD

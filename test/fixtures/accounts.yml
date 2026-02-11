@@ -2,14 +2,14 @@
 
 one:
   institution: one
-  plaid_account_id: MyString
+  plaid_account_id: MyString1
   name: MyString
   account_type: MyString
   subtype: MyString
 
 two:
   institution: two
-  plaid_account_id: MyString
+  plaid_account_id: MyString2
   name: MyString
   account_type: MyString
   subtype: MyString
