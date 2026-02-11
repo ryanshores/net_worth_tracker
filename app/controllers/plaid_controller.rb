@@ -17,7 +17,7 @@ class PlaidController < ApplicationController
   end
 
   def exchange_token
-    params.require([:institution_name, :public_token])
+    params.require([ :institution_name, :public_token ])
 
     exchange = PlaidClient.client.item_public_token_exchange(
       public_token: params[:public_token]
