@@ -1,22 +1,42 @@
 <h1 class="text-2xl font-bold mb-4">Net Worth Tracker</h1>
 
-<button
-  id="link-button"
-  class="px-4 py-2 bg-blue-600 text-white rounded"
->
-  Add account
-</button>
+<div class="row">
+    <button
+      id="link-button"
+      class="px-4 py-2 bg-blue-600 text-white rounded"
+    >
+      Add account
+    </button>
+</div>
 
-<ul class="mt-6">
-  <% @institutions.each do |inst| %>
-    <li class="mb-2">
-      <%= inst.name %>
-      <% if inst.needs_auth? %>
-        <span class="text-red-600">(needs reauth)</span>
+<div>
+    <h2 class="text-xl font-bold mb-4">Institutions</h2>
+    <ul class="mt-6">
+      <% @institutions.each do |inst| %>
+        <li class="mb-2">
+          <%= inst.name %>
+          <% if inst.needs_auth? %>
+            <span class="text-red-600">(needs reauth)</span>
+          <% end %>
+        </li>
       <% end %>
-    </li>
-  <% end %>
-</ul>
+    </ul>
+</div>
+
+<div>
+  <h2 class="text-xl font-semibold mb-4">Net Worth</h2>
+  <div class="text-3xl font-bold mb-2">
+    $<%= @time_series.values.last&.round(2) || 0 %>
+  </div>
+  <div class="bg-white p-6 rounded shadow mb-8">
+    <%= line_chart @time_series,
+                   height: "300px",
+                   thousands: ",",
+                   prefix: "$",
+                   curve: false
+    %>
+  </div>
+</div>
 
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script>
