@@ -1,5 +1,4 @@
 require "test_helper"
-require "ostruct"
 
 class PlaidControllerTest < ActionDispatch::IntegrationTest
   fake_client = Object.new

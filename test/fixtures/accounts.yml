@@ -1,15 +1,45 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+debit_1:
   institution: one
-  plaid_account_id: MyString1
-  name: MyString
-  account_type: MyString
-  subtype: MyString
+  plaid_account_id: acc_1
+  name: One
+  account_type: Depository
+  subtype: Checking
 
-two:
+savings_1:
+  institution: one
+  plaid_account_id: acc_2
+  name: Two
+  account_type: Depository
+  subtype: Savings
+
+credit_1:
+  institution: one
+  plaid_account_id: acc_3
+  name: Three
+  account_type: Credit
+  subtype: Credit Card
+
+debit_2:
   institution: two
-  plaid_account_id: MyString2
-  name: MyString
-  account_type: MyString
-  subtype: MyString
+  plaid_account_id: acc_4
+  name: Four
+  account_type: Depository
+  subtype: Checking
+
+savings_2:
+  institution: two
+  plaid_account_id: acc_5
+  name: Five
+  account_type: Depository
+  subtype: Savings
+
+credit_2:
+  institution: two
+  plaid_account_id: acc_6
+  name: Six
+  account_type: Credit
+  subtype: Credit Card
+
+

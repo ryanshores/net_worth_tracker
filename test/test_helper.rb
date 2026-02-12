@@ -1,7 +1,10 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require "minitest/autorun"
 require "mocha/minitest"
+require "securerandom"
+require "ostruct"
 
 module ActiveSupport
   class TestCase

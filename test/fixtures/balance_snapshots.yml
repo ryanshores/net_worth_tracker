@@ -1,14 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  account: one
+  account: debit_1
   date: 2026-02-10
   current: 9.99
   available: 9.99
   currency: USD
 
 two:
-  account: two
+  account: savings_1
+  date: 2026-02-10
+  current: 9.99
+  available: 9.99
+  currency: USD
+
+three:
+  account: credit_1
   date: 2026-02-10
   current: 9.99
   available: 9.99

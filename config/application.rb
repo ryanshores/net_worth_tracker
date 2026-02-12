@@ -25,5 +25,16 @@ module NetWorthTracker
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.to_prepare do
+      enc = Rails.application.config.active_record.encryption
+      creds = Rails.application.credentials.dig(:active_record_encryption)
+
+      if creds.present?
+        enc.primary_key ||= creds[:primary_key] if creds.primary_key.present?
+        enc.deterministic_key ||= creds[:deterministic_key] if creds.deterministic_key.present?
+        enc.key_derivation_salt ||= creds[:key_derivation_salt] if creds.key_derivation_salt.present?
+      end
+    end
   end
 end
