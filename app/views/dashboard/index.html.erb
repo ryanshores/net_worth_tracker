@@ -15,8 +15,14 @@
       <% @institutions.each do |inst| %>
         <li class="mb-2">
           <%= inst.name %>
+
           <% if inst.needs_auth? %>
-            <span class="text-red-600">(needs reauth)</span>
+            <button
+                class="ml-2 px-3 py-1 bg-red-600 text-white rounded"
+                onclick="reauthInstitution('<%= inst.id %>')"
+            >
+              Reconnect
+            </button>
           <% end %>
         </li>
       <% end %>
@@ -45,8 +51,9 @@
         return { "X-CSRF-Token": token, ...extra };
     }
 
+    const headers = csrfHeaders({ "Content-Type": "application/json", "Accept": "application/json" })
+
     document.getElementById("link-button").onclick = async () => {
-        const headers = csrfHeaders({ "Content-Type": "application/json", "Accept": "application/json" })
         const res = await fetch("/plaid/link_token", { method: "POST", headers: headers })
         const data = await res.json()
 
@@ -60,6 +67,37 @@
                     body: JSON.stringify({
                         public_token: public_token,
                         institution_name: metadata.institution.name
+                    })
+                })
+
+                window.location.reload()
+            }
+        })
+
+        handler.open()
+    }
+
+    async function reauthInstitution(institutionId) {
+        const institution_id = institutionId;
+        const res = await fetch(`/plaid/refresh_token`, {
+            method: "POST",
+            headers: headers,
+            credentials: "same-origin",
+            body: JSON.stringify({ institution_id }) })
+
+        const data = await res.json()
+
+        const handler = Plaid.create({
+            token: data.link_token,
+            onSuccess: async (public_token, metadata) => {
+                await fetch("/plaid/exchange_token", {
+                    method: "POST",
+                    headers: headers,
+                    credentials: "same-origin",
+                    body: JSON.stringify({
+                        public_token: public_token,
+                        institution_name: metadata.institution.name,
+                        institution_id: institution_id
                     })
                 })
 

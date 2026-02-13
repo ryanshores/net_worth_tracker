@@ -49,10 +49,7 @@ class PlaidController < ApplicationController
       client_name: "Net Worth Tracker",
       access_token: institution.access_token,
       country_codes: [ "US" ],
-      language: "en",
-      update: {
-        enabled: true
-      }
+      language: "en"
     )
 
     render json: { link_token: response.link_token }

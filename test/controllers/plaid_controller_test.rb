@@ -2,8 +2,8 @@ require "test_helper"
 
 class PlaidControllerTest < ActionDispatch::IntegrationTest
   fake_client = Object.new
-  def fake_client.link_token_create(update: {}, **)
-    if update[:enabled] == true
+  def fake_client.link_token_create(access_token: nil, **)
+    if access_token.present?
       OpenStruct.new(link_token: "updated_link_token")
     else
       OpenStruct.new(link_token: "link_token")
@@ -38,7 +38,7 @@ class PlaidControllerTest < ActionDispatch::IntegrationTest
 
   test "refresh_token refreshes an institution's access token" do
     PlaidClient.stubs(:client).returns(fake_client)
-    institution = institutions(:one)
+    institution = Institution.create!(name: "Bank A", access_token: "access_token")
     post "/plaid/refresh_token", params: { institution_id: institution.id }, as: :json
     assert_response :success
     json = JSON.parse(response.body)
