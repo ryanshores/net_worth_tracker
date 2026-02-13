@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: net_worth_tracker_production
+      POSTGRES_USER: net_worth_tracker
+      POSTGRES_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d net_worth_tracker_development"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: .
+    command: >
+      bash -lc "
+        bundle install &&
+        bin/rails db:prepare &&
+        bin/rails server -b 0.0.0.0 -p 3000
+      "
+    environment:
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
+      NET_WORTH_TRACKER_DATABASE_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:-postgres}
+      REDIS_URL: redis://redis:6379/0
+      PLAID_ENV: production
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:-}
+      PLAID_SECRET: ${PLAID_SECRET:-}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/rails:cached
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  sidekiq:
+    build:
+      context: .
+    command: >
+      bash -lc "
+        bundle install &&
+        bundle exec sidekiq
+      "
+    environment:
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
+      NET_WORTH_TRACKER_DATABASE_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:-postgres}
+      REDIS_URL: redis://redis:6379/0
+      PLAID_ENV: production
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:-}
+      PLAID_SECRET: ${PLAID_SECRET:-}
+    volumes:
+      - .:/rails:cached
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  bundle_cache:
