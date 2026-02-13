@@ -19,6 +19,10 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+docker: &docker
+  <<: *default
+  host: <%= ENV["NET_WORTH_TRACKER_DATABASE_HOST"] %>
+
 
 development:
   <<: *default
@@ -86,7 +90,7 @@ test:
 #
 production:
   primary: &primary_production
-    <<: *default
+    <<: *docker
     database: net_worth_tracker_production
     username: net_worth_tracker
     password: <%= ENV["NET_WORTH_TRACKER_DATABASE_PASSWORD"] %>

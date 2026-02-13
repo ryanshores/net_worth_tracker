@@ -4,16 +4,17 @@ services:
     environment:
       POSTGRES_DB: net_worth_tracker_production
       POSTGRES_USER: net_worth_tracker
-      POSTGRES_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:?set NET_WORTH_TRACKER_DATABASE_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d net_worth_tracker_development"]
+      test: ["CMD-SHELL", "pg_isready -U net_worth_tracker -d net_worth_tracker_production"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
 
   redis:
     image: redis:7
@@ -28,57 +29,48 @@ services:
       retries: 20
 
   web:
-    build:
-      context: .
-    command: >
-      bash -lc "
-        bundle install &&
-        bin/rails db:prepare &&
-        bin/rails server -b 0.0.0.0 -p 3000
-      "
+    build: .
+    image: net_worth_tracker:prod
     environment:
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
-      NET_WORTH_TRACKER_DATABASE_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:-postgres}
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:?set RAILS_MASTER_KEY}
+      NET_WORTH_TRACKER_DATABASE_HOST: postgres
+      NET_WORTH_TRACKER_DATABASE_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:?set NET_WORTH_TRACKER_DATABASE_PASSWORD}
       REDIS_URL: redis://redis:6379/0
-      PLAID_ENV: production
-      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:-}
-      PLAID_SECRET: ${PLAID_SECRET:-}
+      PLAID_ENV: ${PLAID_ENV:-production}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:?set PLAID_CLIENT_ID}
+      PLAID_SECRET: ${PLAID_SECRET:?set PLAID_SECRET}
     ports:
-      - "3000:3000"
-    volumes:
-      - .:/rails:cached
-      - bundle_cache:/usr/local/bundle
+      - "3000:80"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80/up"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   sidekiq:
-    build:
-      context: .
-    command: >
-      bash -lc "
-        bundle install &&
-        bundle exec sidekiq
-      "
+    image: net_worth_tracker:prod
+    command: ["bundle", "exec", "sidekiq"]
     environment:
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-}
-      NET_WORTH_TRACKER_DATABASE_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:-postgres}
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:?set RAILS_MASTER_KEY}
+      NET_WORTH_TRACKER_DATABASE_HOST: postgres
+      NET_WORTH_TRACKER_DATABASE_PASSWORD: ${NET_WORTH_TRACKER_DATABASE_PASSWORD:?set NET_WORTH_TRACKER_DATABASE_PASSWORD}
       REDIS_URL: redis://redis:6379/0
-      PLAID_ENV: production
-      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:-}
-      PLAID_SECRET: ${PLAID_SECRET:-}
-    volumes:
-      - .:/rails:cached
-      - bundle_cache:/usr/local/bundle
+      PLAID_ENV: ${PLAID_ENV:-production}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID:?set PLAID_CLIENT_ID}
+      PLAID_SECRET: ${PLAID_SECRET:?set PLAID_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      web:
         condition: service_healthy
 
 volumes:
   postgres_data:
   redis_data:
-  bundle_cache:
