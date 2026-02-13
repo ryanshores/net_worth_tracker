@@ -17,5 +17,6 @@ Rails.application.routes.draw do
   resource :plaid, only: [], controller: "plaid" do
     post :link_token
     post :exchange_token
+    post :refresh_token
   end
 end

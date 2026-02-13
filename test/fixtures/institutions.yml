@@ -3,9 +3,7 @@
 one:
   name: Institution One
   status: 1
-  access_token: tok_acc_1
 
 two:
   name: Institution Two
   status: 0
-  access_token: tok_acc_2

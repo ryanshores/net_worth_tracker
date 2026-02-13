@@ -10,6 +10,6 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes response.body, "Bank A"
     assert_includes response.body, "Bank B"
-    assert_includes response.body, "needs reauth"
+    assert_includes response.body, "Reconnect"
   end
 end

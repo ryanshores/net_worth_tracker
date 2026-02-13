@@ -7,9 +7,9 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Ensure Active Record Encryption has keys in test (CI often lacks credentials/master key).
-  config.active_record.encryption.primary_key ||= SecureRandom.hex(32)
-  config.active_record.encryption.deterministic_key ||=  SecureRandom.hex(32)
-  config.active_record.encryption.key_derivation_salt ||=  SecureRandom.hex(32)
+  config.active_record.encryption.primary_key = "primary_key"
+  config.active_record.encryption.deterministic_key = "deterministic_key"
+  config.active_record.encryption.key_derivation_salt = "key_derivation_salt"
 
 
   # While tests run files are not watched, reloading is not necessary.
